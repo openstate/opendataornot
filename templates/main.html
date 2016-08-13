@@ -1,5 +1,19 @@
 {% extends "layout.html" %}
 
 {% block body %}
-hello
+<h1>Sammify</h1>
+<p>Remember the web of 1996 when images were no more than 200 pixels wide and they
+took forever to load? Did it make you feel good? I know you want to feel like that again!</p>
+<p>Inspired by magic create by Sam Wierema here you can upload a picture and it will
+show like a picture in 1996. Have fun!</p>
+
+<form class="form" style="margin: 0 auto;">
+  <fieldset class="form-group">
+    <label for="picture">PICTURE:</label>
+    <input id="picture" type="file" name="picture" class="form-control">
+  </fieldset>
+  <div class="form-actions">
+    <button type="button" class="btn btn-primary btn-block">Sammify!</button>
+  </div>
+</form>
 {% endblock %}
