@@ -3,5 +3,9 @@
 {% block body %}
 <h1>Sammify</h1>
 
-I should server {{ image_file }} now
+<p>I should server {{ image_file }} now</p>
+
+<iframe width="{{ width }}" height="{{ height }}" src="/p/{{ encoded_string }}" frameborder="0" scrolling="no">
+</iframe>
+
 {% endblock %}

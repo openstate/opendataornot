@@ -194,7 +194,13 @@ def get_filename_from_encoded_string(encoded_string):
 @app.route('/i/<encoded_string>')
 def short_link(encoded_string):
     image_file = get_filename_from_encoded_string(encoded_string)
-    return render_template('short_link.html', image_file=image_file)
+
+    if image_file is None:
+        return "404!"  # FIXME: 404 error handling here
+
+    return render_template(
+        'short_link.html',image_file=image_file, encoded_string=encoded_string,
+        width=app.config['MAX_WIDTH'], height=app.config['MAX_HEIGHT'])
 
 # this is for the table only (in iframe in nice page)
 # this actually processes the image
