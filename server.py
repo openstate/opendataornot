@@ -133,11 +133,13 @@ def process_image(image_file, max_width, max_height):
     result_cursor = cursor.execute(insert_row)
     get_db().commit()
     encoded_string = toBase62(result_cursor.lastrowid)
+    return encoded_string
+
+def load_image(image_file, max_width, max_height):
     image = Image.open(image_file)
-    # FIXME: this does not work reliably yet for some reason ...
     image.thumbnail((max_width, max_height), Image.ANTIALIAS)
     pixels = image.load()
-    return encoded_string, image, pixels
+    return image, pixels
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -159,7 +161,7 @@ def upload_file():
                 app.config['UPLOAD_FOLDER'],
                 u'%s.%s' % (str(uuid.uuid4()), file_ext,))
             file.save(image_file)
-            encoded_string, image, pixels = process_image(
+            encoded_string = process_image(
                 image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
             # return render_template(
             #     'upload.html', image=image, pixels=pixels,
@@ -174,8 +176,7 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
-@app.route('/i/<encoded_string>')
-def short_link(encoded_string):
+def get_filename_from_encoded_string(encoded_string):
     image_id = toBase10(encoded_string)
     cursor = get_db().cursor()
     select_row = """
@@ -186,8 +187,26 @@ def short_link(encoded_string):
     try:
         image_file = result_cursor.fetchone()[0]
     except Exception as e:
-        image_file
+        image_file = None
+    return image_file
+
+# this is for the nice page ...
+@app.route('/i/<encoded_string>')
+def short_link(encoded_string):
+    image_file = get_filename_from_encoded_string(encoded_string)
     return render_template('short_link.html', image_file=image_file)
+
+# this is for the table only (in iframe in nice page)
+# this actually processes the image
+@app.route('/p/<encoded_string>')
+def view_image(encoded_string):
+    image_file = get_filename_from_encoded_string(encoded_string)
+    image, pixels = load_image(
+        image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
+    return render_template(
+        'upload.html', image=image, pixels=pixels,
+        image_width=range(image.width),
+        image_height=range(image.height))
 
 if __name__ == "__main__":
     table_check()

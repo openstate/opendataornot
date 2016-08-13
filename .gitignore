@@ -90,6 +90,7 @@ ENV/
 
 # ignore sam
 sam.html
+sammify.db
 
 # ignore uploads
 uploads/
