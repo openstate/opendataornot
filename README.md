@@ -7,9 +7,10 @@ Sammify your picture! Based on [this idea](https://samwierema.nl/sam.html) by @s
 
 # installation
 
+* `git clone git@github.com:StupidHackathonAMS/sammify.git`
+* `mkvirtualenv sammify`
 * `pip install -r requirements.txt`
-* `manage.py backend`
-* `manage.py server`
+* `./server.py`
 
 # contact
 
