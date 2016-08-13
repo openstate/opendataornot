@@ -8,9 +8,13 @@ from PIL import Image
 
 UPLOAD_FOLDER = '/Users/breyten/sammify/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+MAX_WIDTH = 200
+MAX_HEIGHT = 200
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_WIDTH'] = MAX_WIDTH
+app.config['MAX_HEIGHT'] = MAX_HEIGHT
 
 @app.route("/")
 def main():
@@ -20,8 +24,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def process_image(image_file):
+def process_image(image_file, max_width, max_height):
     image = Image.open(image_file)
+    # FIXME: this does not work reliably yet for some reason ...
+    image.thumbnail((max_width, max_height), Image.ANTIALIAS)
     pixels = image.load()
     return image, pixels
 
@@ -42,7 +48,8 @@ def upload_file():
             filename = secure_filename(file.filename)
             image_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(image_file)
-            image, pixels = process_image(image_file)
+            image, pixels = process_image(
+                image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
             return render_template(
                 'upload.html', image=image, pixels=pixels,
                 image_width=range(image.width),
