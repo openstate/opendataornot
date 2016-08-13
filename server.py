@@ -93,7 +93,10 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            image_file = os.path.join(app.config['UPLOAD_FOLDER'],  uuid.uuid4())
+            file_ext = filename.rsplit('.', 1)[1]
+            image_file = os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                u'%s.%s' % (str(uuid.uuid4()), file_ext,))
             file.save(image_file)
             image, pixels = process_image(
                 image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
