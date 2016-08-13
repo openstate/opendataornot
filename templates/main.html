@@ -7,13 +7,13 @@ took forever to load? Did it make you feel good? I know you want to feel like th
 <p>Inspired by magic create by Sam Wierema here you can upload a picture and it will
 show like a picture in 1996. Have fun!</p>
 
-<form class="form" style="margin: 0 auto;">
+<form action="/upload" method="POST" class="form" style="margin: 0 auto;" enctype="multipart/form-data">
   <fieldset class="form-group">
     <label for="picture">PICTURE:</label>
     <input id="picture" type="file" name="picture" class="form-control">
   </fieldset>
   <div class="form-actions">
-    <button type="button" class="btn btn-primary btn-block">Sammify!</button>
+    <input type="submit" class="btn btn-primary btn-block" value="Sammify!">
   </div>
 </form>
 {% endblock %}
