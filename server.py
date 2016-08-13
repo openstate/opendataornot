@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import optparse
+import uuid
 
 from flask import (
     Flask, render_template, request, redirect, url_for, send_from_directory)
@@ -92,7 +93,7 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            image_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image_file = os.path.join(app.config['UPLOAD_FOLDER'],  uuid.uuid4())
             file.save(image_file)
             image, pixels = process_image(
                 image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
