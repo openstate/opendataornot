@@ -1,12 +1,16 @@
 <html>
 <head>
   <title>{% block title %}{% endblock %}</title>
-  <link rel="stylesheet" href="/static/hack.css">
+  <link rel="stylesheet" href="/static/geolize.css">
   <link rel="stylesheet" href="/static/main.css">
 </head>
 <body class="standard">
-  <div class="container">
-  {% block body %}{% endblock %}
-  </div>
+  <header>
+  <h1>Sammify</h1>
+  <h2>Making images load great again</h2>
+  </header>
+  <main>
+    {% block body %}{% endblock %}
+  </main>
 </body>
 </html>
