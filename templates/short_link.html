@@ -3,8 +3,15 @@
 {% block body %}
 <h1><a href="/">Sammify</a></h1>
 
-<iframe width="{{ width }}" height="{{ height }}" src="/p/{{ encoded_string }}" frameborder="0" scrolling="no">
+<iframe id="iframe" width="{{ width }}" height="{{ height }}" frameborder="0" scrolling="no">
 </iframe>
+
+<script type="text/javascript">
+window.setTimeout(function () {
+        var iframe = document.getElementById('iframe');
+        iframe.setAttribute('src', '/p/{{ encoded_string }}');
+}, 1000);
+</script>
 
 <!-- AddToAny BEGIN -->
 <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
