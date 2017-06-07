@@ -1,0 +1,67 @@
+[
+  {
+    "title": "CC0",
+    "description": "Creative Commons CCZero",
+    "domains": ["content", "data"],
+    "link": "http://opendefinition.org/licenses/cc-zero",
+    "urls": [
+      "https?://creativecommons.org/publicdomain/zero/1.0*"
+    ]
+  },
+  {
+    "title": "PDDL",
+    "description": "Open Data Commons Public Domain Dedication and Licence",
+    "domains": ["data"],
+    "link": "http://opendefinition.org/licenses/odc-pddl",
+    "urls": [
+      "http://opendatacommons.org/licenses/pddl/summary*",
+      "http://opendatacommons.org/licenses/pddl/1.0*"
+    ]
+  },
+  {
+    "title": "CC-By 4.0",
+    "description": "Creative Commons Attribution 4.0",
+    "domains": ["content", "data"],
+    "link": "http://opendefinition.org/licenses/cc-by",
+    "urls": [
+      "https?://creativecommons.org/licenses/by/4.0*",
+      "https?://creativecommons.org/licenses/by/3.0*",
+      "https?://creativecommons.org/licenses/by/2.5*",
+      "https?://creativecommons.org/licenses/by/2.0*",
+      "https?://creativecommons.org/licenses/by/1.0*"
+    ]
+  },
+  {
+    "title": "ODC-BY",
+    "description": "Open Data Commons Attribution License",
+    "domains": ["data"],
+    "link": "http://opendefinition.org/licenses/cc-zero",
+    "urls": [
+      "http://opendatacommons.org/licenses/by/summary*",
+      "http://opendatacommons.org/licenses/by/1.0*"
+    ]
+  },
+  {
+    "title": "CC-By-SA-4.0",
+    "description": "Creative Commons Attribution Share-Alike 4.0",
+    "domains": ["content", "data"],
+    "link": "http://opendefinition.org/licenses/cc-by-sa/",
+    "urls": [
+      "https?://creativecommons.org/licenses/by-sa/4.0*",
+      "https?://creativecommons.org/licenses/by-sa/3.0*",
+      "https?://creativecommons.org/licenses/by-sa/2.5*",
+      "https?://creativecommons.org/licenses/by-sa/2.0*",
+      "https?://creativecommons.org/licenses/by-sa/1.0*"
+    ]
+  },
+  {
+    "title": "ODbL",
+    "description": "Open Data Commons Open Database License",
+    "domains": ["data"],
+    "link": "http://opendefinition.org/licenses/odc-odbl/",
+    "urls": [
+      "http://opendatacommons.org/licenses/odbl/summary/",
+      "http://opendatacommons.org/licenses/odbl/1.0/"
+    ]
+  }
+]
