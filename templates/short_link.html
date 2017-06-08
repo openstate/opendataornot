@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<iframe id="iframe" width="{{ width }}" height="{{ height }}" frameborder="0" scrolling="no">
+</iframe>
+
+<script type="text/javascript">
+window.setTimeout(function () {
+        var iframe = document.getElementById('iframe');
+        iframe.setAttribute('src', '/p/{{ encoded_string }}');
+}, 5000);
+</script>
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+<a class="a2a_button_twitter"></a>
+<a class="a2a_button_facebook"></a>
+<a class="a2a_button_google_plus"></a>
+<a class="a2a_button_pinterest"></a>
+</div>
+
+<div style="margin-top: 2em; margin-bottom: 2em;">
+  <form class="form">
+    <fieldset class="form-group">
+      <label for="picture">EMBED:</label>
+      <input id="picture" type="text" name="picture" class="form-control" value="http://sammify.com/p/{{ encoded_string }}">
+    </fieldset>
+  </form>
+</div>
+
+<script async src="https://static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+{% endblock %}
