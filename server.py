@@ -60,6 +60,7 @@ def flaskrun(app, default_host="0.0.0.0",
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def toBase62(num, b = 62):
     if b <= 0 or b > 62:
