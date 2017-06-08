@@ -8,16 +8,12 @@ import string
 from flask import (
     Flask, render_template, request, redirect, url_for, send_from_directory, g)
 from werkzeug.utils import secure_filename
-from PIL import Image
 import sqlite3
 
-DATABASE = '/Users/breyten/sammify/sammify.db'
-UPLOAD_FOLDER = '/Users/breyten/sammify/uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-MAX_WIDTH = 200
-MAX_HEIGHT = 200
+DATABASE = '/opt/opendataornot/sammify.db'
+UPLOAD_FOLDER = '/opt/opendataornot/uploads'
 
-def flaskrun(app, default_host="127.0.0.1",
+def flaskrun(app, default_host="0.0.0.0",
                   default_port="5000"):
     """
     Takes a flask.Flask instance and runs it. Parses
@@ -64,8 +60,6 @@ def flaskrun(app, default_host="127.0.0.1",
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_WIDTH'] = MAX_WIDTH
-app.config['MAX_HEIGHT'] = MAX_HEIGHT
 
 def toBase62(num, b = 62):
     if b <= 0 or b > 62:
@@ -121,8 +115,7 @@ def main():
     return render_template('main.html')
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return True
 
 def process_image(image_file, max_width, max_height):
     cursor = get_db().cursor()

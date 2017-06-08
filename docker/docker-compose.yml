@@ -1,0 +1,31 @@
+version: '2'
+services:
+  c-opendataornot-nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    volumes:
+      - ./nginx/:/etc/nginx/
+      - ../log:/opt/nginx-load-balancer/log
+      - ../data:/usr/share/nginx/html/data
+      - ../docs/_build/html:/usr/share/nginx/html/docs
+    restart: always
+    ports:
+     - "80:80"
+    networks:
+      - nginx-load-balancer
+      - opendataornot
+  c-opendataornot-app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/opt/opendataornot
+    restart: always
+    networks:
+      - opendataornot
+networks:
+  opendataornot:
+  nginx-load-balancer:
+    external:
+      name: docker_nginx-load-balancer

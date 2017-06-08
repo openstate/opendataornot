@@ -94,3 +94,5 @@ sammify.db
 
 # ignore uploads
 uploads/
+# and log
+log/
