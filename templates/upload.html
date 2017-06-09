@@ -1,12 +1,40 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<h1>Resultaat</h1>
+<form id="result-form" class="form" style="margin: 0 auto;" enctype="multipart/form-data">
+  <fieldset class="form-group">
+    <label for="link">Licentie:</label>
+    <select name="license">
+      {% for license in licenses %}
+        <option value="{{ license.link }}">{{ license.description }}</option>
+      {% endfor %}
+      <option value="-">Een andere licentie</option>
+    </select>
+  </fieldset>
+  <div class="form-actions">
+    <input type="submit" class="btn btn-primary btn-block" value="Check het!">
+  </div>
+</form>
 
-<ul>
-  <li>Number of stars:
-  {% for s in range(stars) %}★{% endfor %}
-  </li>
-  <li>Rights: {{ rights }}</li>
-</ul>
+<div id="result-final-ok" style="display: none;">
+  <h1>Gefeliciteerd!</h1>
+
+  <ul>
+    <li>Aantal sterren volgens tim berners lee:
+    {% for s in range(stars) %}★{% endfor %}
+    </li>
+    <li>Rechten: <span id="result-rights"></span></li>
+  </ul>
+</div>
+
+<div id="result-final-not-ok" style="display: none;">
+  <h2>Helaas ....</h2>
+  <p>Je bestand of link is geen open data. Dit is omdat de licentie noet open (goenoeg) is ....</p>
+  <ul>
+    <li>Aantal sterren volgens tim berners lee:
+    {% for s in range(stars) %}★{% endfor %}
+    </li>
+    <li>Rechten: <span id="result-rights"></span></li>
+  </ul>
+</div>
 {% endblock %}

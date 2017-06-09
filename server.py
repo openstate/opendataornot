@@ -10,6 +10,7 @@ import magic
 import requests
 from werkzeug.utils import secure_filename
 import sqlite3
+import json
 
 DATABASE = '/opt/opendataornot/sammify.db'
 UPLOAD_FOLDER = '/opt/opendataornot/uploads'
@@ -81,6 +82,8 @@ class PDFOrExcelParser(BaseFileParser):
     def get_stars(self):
         if self.local_file_extension in ['pdf', 'xls', 'xlsx', 'xlsm']:
             return 2
+        if self.local_file_extension in ['pdf']:
+            return 1
         return 0
 
 
@@ -176,9 +179,15 @@ def process_local_file(local_file, local_ext):
         rights.append(p.get_rights())
     num_stars = max(stars)
     known_rights = [r for r in rights if r is not None]
+
+    licenses = []
+    with open('data/licenses.json', 'r') as in_file:
+        licenses = json.load(in_file)
+
     return render_template(
         'upload.html', mime_type=result, file_name=local_file,
-        file_extension=local_ext, stars=num_stars, rights=known_rights,)
+        file_extension=local_ext, stars=num_stars, rights=known_rights,
+        licenses=licenses)
 
 
 @app.teardown_appcontext
