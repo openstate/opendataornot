@@ -6,6 +6,7 @@ import uuid
 from flask import (
     Flask, render_template, request, redirect, url_for, g,
     flash)
+import magic
 import requests
 from werkzeug.utils import secure_filename
 import sqlite3
@@ -63,6 +64,51 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
+class BaseFileParser(object):
+    def __init__(self, local_file, local_file_extension, mime_type):
+        self.local_file = local_file
+        self.local_file_extension = local_file_extension
+        self.mime_type = mime_type
+
+    def get_stars(self):
+        return 1
+
+    def get_rights(self):
+        return None
+
+
+class PDFOrExcelParser(BaseFileParser):
+    def get_stars(self):
+        if self.local_file_extension in ['pdf', 'xls', 'xlsx', 'xlsm']:
+            return 2
+        return 0
+
+
+class JSONOrCSVParser(BaseFileParser):
+    def get_stars(self):
+        if self.local_file_extension in ['json', 'csv', 'tsv']:
+            return 3
+        return 0
+
+
+class XMLParser(BaseFileParser):
+    def get_stars(self):
+        if self.local_file_extension in ['xml']:
+            return 4
+        return 0
+
+
+class RDFParser(BaseFileParser):
+    def get_stars(self):
+        if self.local_file_extension in ['rdf']:
+            return 5
+        return 0
+
+
+PARSER_CLASSES = [
+    BaseFileParser, PDFOrExcelParser, XMLParser, RDFParser]
+
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -110,15 +156,27 @@ def download_file(url):
             if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
                 # f.flush() commented by recommendation from J.F.Sebastian
-    return image_file
+    return image_file, file_ext
 
 
 def process_link(link):
-    local_file = download_file(link)
-    return process_local_file(local_file)
+    local_file, local_ext = download_file(link)
+    return process_local_file(local_file, local_ext)
 
-def process_local_file(local_file):
-    return local_file
+
+def process_local_file(local_file, local_ext):
+    m = magic.Magic(mime=True, uncompress=True)
+    result = m.from_file(local_file)
+
+    stars = []
+    rights = []
+    for parser in PARSER_CLASSES:
+        p = parser(local_file, local_ext, result)
+        stars.append(p.get_stars())
+        rights.append(p.get_rights())
+    num_stars = max(stars)
+    known_rights = [r for r in rights if r is not None]
+    return u'%s - %s - %s - %s' % (result, local_ext, num_stars, known_rights,)
 
 
 @app.teardown_appcontext
@@ -156,7 +214,7 @@ def upload_file():
                 app.config['UPLOAD_FOLDER'],
                 u'%s.%s' % (str(uuid.uuid4()), file_ext,))
             file.save(image_file)
-            return process_local_file(image_file)
+            return process_local_file(image_file, file_ext)
     return render_template('upload.html')
 
 if __name__ == "__main__":
