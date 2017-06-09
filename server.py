@@ -178,7 +178,7 @@ def process_local_file(local_file, local_ext):
     known_rights = [r for r in rights if r is not None]
     return render_template(
         'upload.html', mime_type=result, file_name=local_file,
-        file_extension=local_ext, stars=num_stars, rights=known_rights)
+        file_extension=local_ext, stars=num_stars, rights=known_rights,)
 
 
 @app.teardown_appcontext

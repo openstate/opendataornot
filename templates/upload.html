@@ -4,7 +4,9 @@
 <h1>Resultaat</h1>
 
 <ul>
-  <li>Number of stars: {{ stars }}</li>
+  <li>Number of stars:
+  {% for s in range(stars) %}★{% endfor %}
+  </li>
   <li>Rights: {{ rights }}</li>
 </ul>
 {% endblock %}
