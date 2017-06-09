@@ -6,6 +6,7 @@ import uuid
 from flask import (
     Flask, render_template, request, redirect, url_for, g,
     flash)
+import requests
 from werkzeug.utils import secure_filename
 import sqlite3
 
@@ -86,8 +87,38 @@ def table_check():
             pass
 
 
+def download_file(url):
+    local_filename = url.split('/')[-1]
+
+    try:
+        file_ext = local_filename.rsplit('.', 1)[1]
+    except LookupError:
+        file_ext = 'html'
+
+    image_file = os.path.join(
+        app.config['UPLOAD_FOLDER'],
+        u'%s.%s' % (str(uuid.uuid4()), file_ext,))
+
+    # NOTE the stream=True parameter
+    r = requests.get(url, stream=True)
+
+    if r.status_code < 200 or r.status_code >= 300:
+        return None
+
+    with open(image_file, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:  # filter out keep-alive new chunks
+                f.write(chunk)
+                # f.flush() commented by recommendation from J.F.Sebastian
+    return image_file
+
+
 def process_link(link):
-    return 'Hallo'
+    local_file = download_file(link)
+    return process_local_file(local_file)
+
+def process_local_file(local_file):
+    return local_file
 
 
 @app.teardown_appcontext
@@ -125,14 +156,7 @@ def upload_file():
                 app.config['UPLOAD_FOLDER'],
                 u'%s.%s' % (str(uuid.uuid4()), file_ext,))
             file.save(image_file)
-            encoded_string = process_image(
-                image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
-            # return render_template(
-            #     'upload.html', image=image, pixels=pixels,
-            #     image_width=range(image.width),
-            #     image_height=range(image.height))
-            return redirect(url_for('short_link',
-                                    encoded_string=encoded_string))
+            return process_local_file(image_file)
     return render_template('upload.html')
 
 if __name__ == "__main__":
