@@ -2,19 +2,18 @@
 import os
 import optparse
 import uuid
-from math import floor
-import string
 
 from flask import (
-    Flask, render_template, request, redirect, url_for, send_from_directory, g)
+    Flask, render_template, request, redirect, url_for, g,
+    flash)
 from werkzeug.utils import secure_filename
 import sqlite3
 
 DATABASE = '/opt/opendataornot/sammify.db'
 UPLOAD_FOLDER = '/opt/opendataornot/uploads'
 
-def flaskrun(app, default_host="0.0.0.0",
-                  default_port="5000"):
+
+def flaskrun(app, default_host="0.0.0.0", default_port="5000"):
     """
     Takes a flask.Flask instance and runs it. Parses
     command-line flags to configure the app.
@@ -48,8 +47,7 @@ def flaskrun(app, default_host="0.0.0.0",
         from werkzeug.contrib.profiler import ProfilerMiddleware
 
         app.config['PROFILE'] = True
-        app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
-                       restrictions=[30])
+        app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30])
         options.debug = True
 
     app.run(
@@ -59,35 +57,17 @@ def flaskrun(app, default_host="0.0.0.0",
     )
 
 app = Flask(__name__)
+app.secret_key = 'r\xfcp\xca(_\x06\x12\x8d\x91\xc7\x12u\x98\x15_\xed\x82\n%'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-def toBase62(num, b = 62):
-    if b <= 0 or b > 62:
-        return 0
-    base = string.digits + string.lowercase + string.uppercase
-    r = num % b
-    res = base[r];
-    q = floor(num / b)
-    while q:
-        r = q % b
-        q = floor(q / b)
-        res = base[int(r)] + res
-    return res
-
-def toBase10(num, b = 62):
-    base = string.digits + string.lowercase + string.uppercase
-    limit = len(num)
-    res = 0
-    for i in xrange(limit):
-        res = b * res + base.find(num[i])
-    return res
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
     return db
+
 
 def table_check():
     create_table = """
@@ -105,49 +85,39 @@ def table_check():
             print e
             pass
 
+
+def process_link(link):
+    return 'Hallo'
+
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
 
+
 @app.route("/")
 def main():
     return render_template('main.html')
 
+
 def allowed_file(filename):
     return True
 
-def process_image(image_file, max_width, max_height):
-    cursor = get_db().cursor()
-    insert_row = """
-        INSERT INTO IMAGES (FILE)
-            VALUES ('%s')
-        """ % (image_file,)
-    result_cursor = cursor.execute(insert_row)
-    get_db().commit()
-    encoded_string = toBase62(result_cursor.lastrowid)
-    return encoded_string
-
-def load_image(image_file, max_width, max_height):
-    image = Image.open(image_file)
-    image.thumbnail((max_width, max_height), Image.ANTIALIAS)
-    pixels = image.load()
-    return image, pixels
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'picture' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
+            return process_link(request.form['link'])
+
         file = request.files['picture']
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
+            return process_link(request.form['link'])
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_ext = filename.rsplit('.', 1)[1]
@@ -164,49 +134,6 @@ def upload_file():
             return redirect(url_for('short_link',
                                     encoded_string=encoded_string))
     return render_template('upload.html')
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
-
-def get_filename_from_encoded_string(encoded_string):
-    image_id = toBase10(encoded_string)
-    cursor = get_db().cursor()
-    select_row = """
-            SELECT FILE FROM IMAGES
-                WHERE ID=%s
-            """ % (image_id)
-    result_cursor = cursor.execute(select_row)
-    try:
-        image_file = result_cursor.fetchone()[0]
-    except Exception as e:
-        image_file = None
-    return image_file
-
-# this is for the nice page ...
-@app.route('/i/<encoded_string>')
-def short_link(encoded_string):
-    image_file = get_filename_from_encoded_string(encoded_string)
-
-    if image_file is None:
-        return "404!"  # FIXME: 404 error handling here
-
-    return render_template(
-        'short_link.html',image_file=image_file, encoded_string=encoded_string,
-        width=app.config['MAX_WIDTH'], height=app.config['MAX_HEIGHT'])
-
-# this is for the table only (in iframe in nice page)
-# this actually processes the image
-@app.route('/p/<encoded_string>')
-def view_image(encoded_string):
-    image_file = get_filename_from_encoded_string(encoded_string)
-    image, pixels = load_image(
-        image_file, app.config['MAX_WIDTH'], app.config['MAX_HEIGHT'])
-    return render_template(
-        'upload.html', image=image, pixels=pixels,
-        image_width=range(image.width),
-        image_height=range(image.height))
 
 if __name__ == "__main__":
     table_check()
