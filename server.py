@@ -176,7 +176,9 @@ def process_local_file(local_file, local_ext):
         rights.append(p.get_rights())
     num_stars = max(stars)
     known_rights = [r for r in rights if r is not None]
-    return u'%s - %s - %s - %s' % (result, local_ext, num_stars, known_rights,)
+    return render_template(
+        'upload.html', mime_type=result, file_name=local_file,
+        file_extension=local_ext, stars=num_stars, rights=known_rights)
 
 
 @app.teardown_appcontext
