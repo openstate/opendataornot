@@ -1,5 +1,5 @@
 # opendataornot
-We'll tell you if it's open data or not!
+We'll tell you if it's open data or not! NOTE: this is far from complete!
 
 # Licenses
 
